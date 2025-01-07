@@ -1,109 +1,131 @@
 import java.util.Scanner;
-class atm{
-    float Balance;
-    int [] PIN= {1408};
 
-    public void checkPin(){
-        System.out.print("Enter your PIN: ");
-        Scanner sc=new Scanner(System.in);
-        int EnteredPin=sc.nextInt();
-        if(EnteredPin== PIN[0]){
-            menu();
-        }
-        else {
-            System.out.println("Enter the valid pin");
+class ATM {
+    private float balance = 0.0f;
+    private int pin = 1408; // Use a single PIN variable
+    private Scanner scanner = new Scanner(System.in); // Single Scanner object
+
+    public void checkPin() {
+        try {
+            System.out.print("Enter your PIN: ");
+            int enteredPin = scanner.nextInt();
+            if (enteredPin == pin) {
+                menu();
+            } else {
+                System.out.println("Invalid PIN. Please try again.");
+                checkPin();
+            }
+        } catch (Exception e) {
+            System.out.println("Error: Please enter a valid number.");
+            scanner.nextLine(); // Clear invalid input
             checkPin();
         }
     }
 
-    public void menu(){
-        System.out.println("Enter your choice: ");
-        System.out.println("1. Check A/C Balance");
-        System.out.println("2. Withdrawal money");
-        System.out.println("3. Deposit money");
-        System.out.println("4. Change PIN");
-        System.out.println("5. Exit");
-        Scanner sc=new Scanner(System.in);
-        int opt=sc.nextInt();
-        if(opt==1){
-            checkBalance();
-        }
-        else if (opt==2) {
-            Withdrawal();
-        }
-        else if (opt==3) {
-            Deposit();
-        }
-        else if (opt==4) {
-            PINChange();
-        }
-        else if (opt==5) {
-            return;
-        }
-        else{
-            System.out.println("Enter the valid Choice");
-            menu();
-        }
-    }
+    public void menu() {
+        while (true) {
+            try {
+                System.out.println("\n--- ATM Menu ---");
+                System.out.println("1. Check A/C Balance");
+                System.out.println("2. Withdraw Money");
+                System.out.println("3. Deposit Money");
+                System.out.println("4. Change PIN");
+                System.out.println("5. Exit");
+                System.out.print("Enter your choice: ");
 
-    public void checkBalance(){
-        System.out.println("Balance: "+Balance);
-        menu();
-    }
-
-    public void Withdrawal(){
-        Scanner sc=new Scanner(System.in);
-        System.out.print("Enter Amount: ");
-        int amount=sc.nextInt();
-        Scanner r=new Scanner(System.in);
-        System.out.print("Enter the PIN: ");
-        int p=r.nextInt();
-        if(p==PIN[0]){
-            if(amount>Balance){
-                System.out.println("Insufficient Balance");
-                menu();
-            }
-            else {
-                Balance-=amount;
-                System.out.println("Withdrawal Successful!!");
-                menu();
+                int choice = scanner.nextInt();
+                switch (choice) {
+                    case 1 -> checkBalance();
+                    case 2 -> withdraw();
+                    case 3 -> deposit();
+                    case 4 -> changePIN();
+                    case 5 -> {
+                        System.out.println("Thank you for using the ATM. Goodbye!");
+                        return;
+                    }
+                    default -> System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: Please enter a valid number.");
+                scanner.nextLine(); // Clear invalid input
             }
         }
-        else{
-            System.out.println("Invalid PIN");
-            Withdrawal();
+    }
+
+    public void checkBalance() {
+        System.out.println("Current Balance: " + balance);
+    }
+
+    public void withdraw() {
+        try {
+            System.out.print("Enter withdrawal amount: ");
+            float amount = scanner.nextFloat();
+            if (amount <= 0) {
+                System.out.println("Error: Amount must be greater than zero.");
+                return;
+            }
+            if (amount > balance) {
+                System.out.println("Error: Insufficient balance.");
+                return;
+            }
+            System.out.print("Re-enter your PIN to confirm: ");
+            int enteredPin = scanner.nextInt();
+            if (enteredPin == pin) {
+                balance -= amount;
+                System.out.println("Withdrawal successful! Remaining balance: " + balance);
+            } else {
+                System.out.println("Error: Invalid PIN.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: Please enter a valid number.");
+            scanner.nextLine(); // Clear invalid input
         }
     }
 
-    public void Deposit(){
-        Scanner sc=new Scanner(System.in);
-        System.out.print("Enter the Amount: ");
-        int amount=sc.nextInt();
-        Balance+=amount;
-        System.out.println("Deposit Successful");
-        menu();
-    }
-    public void PINChange(){
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter the Old PIN: ");
-        int OP=sc.nextInt();
-        if (OP==PIN[0]){
-            Scanner s = new Scanner(System.in);
-            System.out.print("Enter the New PIN: ");
-            int b=s.nextInt();
-            PIN[0]=b;
-            menu();
+    public void deposit() {
+        try {
+            System.out.print("Enter deposit amount: ");
+            float amount = scanner.nextFloat();
+            if (amount <= 0) {
+                System.out.println("Error: Amount must be greater than zero.");
+                return;
+            }
+            balance += amount;
+            System.out.println("Deposit successful! New balance: " + balance);
+        } catch (Exception e) {
+            System.out.println("Error: Please enter a valid number.");
+            scanner.nextLine(); // Clear invalid input
         }
-        else {
-            System.out.println("Enter the valid PIN: ");
-            PINChange();
+    }
+
+    public void changePIN() {
+        try {
+            System.out.print("Enter current PIN: ");
+            int currentPin = scanner.nextInt();
+            if (currentPin == pin) {
+                System.out.print("Enter new PIN: ");
+                int newPin = scanner.nextInt();
+                System.out.print("Confirm new PIN: ");
+                int confirmPin = scanner.nextInt();
+                if (newPin == confirmPin) {
+                    pin = newPin;
+                    System.out.println("PIN changed successfully.");
+                } else {
+                    System.out.println("Error: PINs do not match. Try again.");
+                }
+            } else {
+                System.out.println("Error: Incorrect current PIN.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: Please enter a valid number.");
+            scanner.nextLine(); // Clear invalid input
         }
     }
 }
 
 public class AtmMachine {
     public static void main(String[] args) {
-        atm obj=new atm();
-        obj.checkPin();
+        ATM atm = new ATM();
+        atm.checkPin();
     }
 }
